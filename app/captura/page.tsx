@@ -3,6 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 
+// URL da sua API Google Apps Script
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxhpKsP9bMYZvWw32SdDNKTEHtH7pQB6w1dk_uNIAv7QJzvTJV-uR_FkwQpDm9FAUR0/exec';
+
 // Definição das cores baseadas na imagem
 const PRIMARY_BLUE = '#4A9FF5';
 const DARK_BLUE = '#2B7AC9';
@@ -109,8 +112,10 @@ const App = () => {
     return null;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Lógica de envio atualizada para conectar com o Google Sheets
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (!validateForm()) {
       setSubmitStatus('error');
       return;
@@ -119,13 +124,38 @@ const App = () => {
     setIsSubmitting(true);
     setSubmitStatus(null);
 
-    setTimeout(() => {
+    // Preparando os dados
+    const formData = {
+      nome: nome,
+      whatsapp: whatsapp,
+      email: email
+    };
+
+    try {
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors', // Importante para evitar erro de CORS com Google Script
+        body: JSON.stringify(formData),
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8', // Enviar como texto evita preflight do browser
+        },
+      });
+
+      // Sucesso
       setIsSubmitting(false);
       setSubmitStatus('success');
+      
+      // Limpa o formulário
       setNome('');
       setWhatsapp('');
       setEmail('');
-    }, 1500);
+
+    } catch (error) {
+      console.error('Erro no envio:', error);
+      setIsSubmitting(false);
+      setSubmitStatus('error');
+      alert('Ops! Algo deu errado ao salvar seus dados. Tente novamente.');
+    }
   };
 
   useEffect(() => {
