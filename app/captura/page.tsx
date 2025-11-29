@@ -94,7 +94,7 @@ const App = () => {
 
   const validateForm = () => {
     const whatsappDigits = whatsapp.replace(/\D/g, '');
-    const isNomeValid = nome.trim().length >= 3;
+    const isNomeValid = nome.trim().length >= 2;
     const isWhatsappValid = whatsappDigits.length === 11; 
     const isEmailValid = /^[^\s@]+@gmail\.com$/i.test(email);
     return isNomeValid && isWhatsappValid && isEmailValid;
@@ -129,13 +129,8 @@ const App = () => {
   };
 
   useEffect(() => {
-    if (submitStatus === 'success') {
-      const timer = setTimeout(() => {
-        setSubmitStatus(null);
-        setIsPopupOpen(false);
-      }, 5000); 
-      return () => clearTimeout(timer);
-    }
+    // Popup de sucesso não fecha automaticamente
+    // O usuário pode interagir com os botões
   }, [submitStatus]);
 
   // Previne scroll horizontal e overscroll (mas permite pull-to-refresh)
@@ -166,6 +161,29 @@ const App = () => {
         }
         * {
           -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Customização da scrollbar */
+        ::-webkit-scrollbar {
+          width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.3);
+          border-radius: 10px;
+          transition: background 0.3s;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Firefox */
+        * {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
         }
       `}</style>
 
@@ -209,7 +227,7 @@ const App = () => {
             alt="App BodyUp no celular" 
             width={425}
             height={850}
-            className="w-full max-w-[280px] h-auto"
+            className="w-full max-w-[336px] h-auto"
           />
         </div>
 
@@ -224,10 +242,10 @@ const App = () => {
         <div className="flex justify-center mb-8">
           <button
             onClick={() => setIsPopupOpen(true)}
-            className="px-6 py-3 text-lg font-bold text-white rounded-full shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 active:scale-95"
+            className="px-10 py-3 text-lg font-bold text-white rounded-full shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 active:scale-95"
             style={{ backgroundColor: RED_ACCENT }}
           >
-            Quero Participar!
+            Garantir Assinatura Vitalícia
           </button>
         </div>
 
@@ -263,7 +281,7 @@ const App = () => {
               alt="App BodyUp - Atinja suas metas" 
               width={250}
               height={500}
-              className="w-auto h-auto max-w-[250px]"
+              className="w-auto h-auto max-w-[300px]"
             />
           </div>
 
@@ -287,21 +305,21 @@ const App = () => {
         <div className="flex justify-center mb-8">
           <button
             onClick={() => setIsPopupOpen(true)}
-            className="px-6 py-3 text-lg font-bold text-white rounded-full shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 active:scale-95"
+            className="px-10 py-3 text-lg font-bold text-white rounded-full shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 active:scale-95"
             style={{ backgroundColor: RED_ACCENT }}
           >
-            Quero Fazer Parte!
+            Garantir Assinatura Vitalícia
           </button>
         </div>
 
-        {/* Nova Seção - Carrossel de Telas do App - ORIGINAL */}
+        {/* Nova Seção - Carrossel de Telas do App */}
         <div className="mb-12 px-6">
           <h2 className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-8 text-center">
             Conheça o BodyUp por dentro!
           </h2>
 
           <div className="flex flex-col items-center gap-6">
-            <div className="flex flex-row items-center justify-center gap-8">
+            <div className="flex flex-row items-center justify-center gap-8 w-full max-w-5xl">
               {/* Moldura com Screenshot */}
               <div 
                 className="relative flex-shrink-0 cursor-grab active:cursor-grabbing"
@@ -332,8 +350,8 @@ const App = () => {
               </div>
 
               {/* Descrição */}
-              <div className="text-left w-[400px]">
-                <h3 className="text-3xl sm:text-4xl font-bold text-white mb-4 transition-opacity duration-300 h-[100px] flex items-start">
+              <div className="text-left flex-1 max-w-md">
+                <h3 className="text-3xl sm:text-4xl font-bold text-white mb-4 transition-opacity duration-300 min-h-[100px] flex items-start">
                   {slides[currentSlide].title}
                 </h3>
                 <p className="text-white text-base leading-relaxed transition-opacity duration-300">
@@ -362,10 +380,10 @@ const App = () => {
         <div className="flex justify-center mb-8">
           <button
             onClick={() => setIsPopupOpen(true)}
-            className="px-6 py-3 text-lg font-bold text-white rounded-full shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 active:scale-95"
+            className="px-10 py-3 text-lg font-bold text-white rounded-full shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 active:scale-95"
             style={{ backgroundColor: RED_ACCENT }}
           >
-            Quero Participar!
+            Garantir Assinatura Vitalícia
           </button>
         </div>
 
@@ -393,8 +411,8 @@ const App = () => {
                   Em alguns momentos, nossa equipe entrará em contato para mais informações. Obrigado!
                 </p>
                 
-                {/* Botões de Ação */}
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                {/* Botões de Ação - Lado a lado */}
+                <div className="flex flex-row gap-3 justify-center">
                   <a
                     href="https://www.instagram.com/bodyup.app/"
                     target="_blank"
@@ -430,20 +448,20 @@ const App = () => {
                   {/* Campo Nome */}
                   <div>
                     <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-2">
-                      Nome Completo
+                      Como podemos te chamar?
                     </label>
                     <input
                       type="text"
                       id="nome"
                       value={nome}
                       onChange={(e) => setNome(e.target.value)}
-                      placeholder="Seu nome completo"
+                      placeholder="Seu nome"
                       className="w-full p-3 border-2 border-gray-300 rounded-lg outline-none transition duration-150 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-gray-900 placeholder-gray-400"
-                      style={{ borderColor: submitStatus === 'error' && nome.trim().length < 3 ? '#EF4444' : '' }}
+                      style={{ borderColor: submitStatus === 'error' && nome.trim().length < 2 ? '#EF4444' : '' }}
                       disabled={isSubmitting}
                     />
-                    {submitStatus === 'error' && nome.trim().length < 3 && (
-                      <p className="mt-1 text-xs text-red-500">Digite seu nome completo</p>
+                    {submitStatus === 'error' && nome.trim().length < 2 && (
+                      <p className="mt-1 text-xs text-red-500">Digite seu nome</p>
                     )}
                   </div>
 
