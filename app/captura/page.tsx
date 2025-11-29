@@ -29,7 +29,7 @@ const App = () => {
   const [whatsapp, setWhatsapp] = useState('');
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState(null);
+  const [submitStatus, setSubmitStatus] = useState<string | null>(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -64,11 +64,11 @@ const App = () => {
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
 
-  const handleTouchStart = (e) => {
+  const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStart(e.touches[0].clientX);
   };
 
-  const handleTouchMove = (e) => {
+  const handleTouchMove = (e: React.TouchEvent) => {
     setTouchEnd(e.touches[0].clientX);
   };
 
@@ -83,7 +83,7 @@ const App = () => {
     }
   };
 
-  const handleWhatsappChange = (e) => {
+  const handleWhatsappChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
     const formatted = formatWhatsapp(rawValue);
     if (formatted.replace(/\D/g, '').length <= 11) {
@@ -107,7 +107,7 @@ const App = () => {
     return null;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) {
       setSubmitStatus('error');
