@@ -134,34 +134,52 @@ const App = () => {
     }
   }, [submitStatus]);
 
+  // Previne scroll horizontal e overscroll
+  useEffect(() => {
+    document.body.style.overflowX = 'hidden';
+    document.body.style.overscrollBehavior = 'none';
+    document.documentElement.style.overflowX = 'hidden';
+    document.documentElement.style.overscrollBehavior = 'none';
+    
+    return () => {
+      document.body.style.overflowX = '';
+      document.body.style.overscrollBehavior = '';
+      document.documentElement.style.overflowX = '';
+      document.documentElement.style.overscrollBehavior = '';
+    };
+  }, []);
+
   return (
     <div 
-      className="min-h-screen flex items-center justify-center p-4 font-sans"
-      style={{ backgroundColor: PRIMARY_BLUE }}
+      className="min-h-screen w-full overflow-x-hidden"
+      style={{ 
+        backgroundColor: PRIMARY_BLUE,
+        overscrollBehavior: 'none'
+      }}
     >
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-screen-sm mx-auto px-4 py-6">
         
         {/* Logo BodyUp */}
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-6">
           <Image 
             src="/bodyuplogo.png" 
             alt="BodyUp Logo" 
             width={280}
             height={80}
-            className="w-auto h-auto max-w-[280px]"
+            className="w-full max-w-[200px] h-auto"
             priority
           />
         </div>
 
         {/* Header com título e badge */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-4 px-4">
+        <div className="text-center mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white leading-tight mb-4">
             Seja um usuário teste do nosso app e ganhe uma assinatura vitalícia!
           </h1>
           
           {/* Badge vermelho */}
           <div 
-            className="inline-block px-6 py-2 rounded-full text-white font-medium text-sm"
+            className="inline-block px-4 py-2 rounded-full text-white font-medium text-sm"
             style={{ backgroundColor: RED_ACCENT }}
           >
             Você ganha, nós também! &lt;3
@@ -169,28 +187,28 @@ const App = () => {
         </div>
 
         {/* Imagem do Celular */}
-        <div className="flex justify-center mb-8 px-6">
+        <div className="flex justify-center mb-6">
           <Image 
             src="/Cell_phone_01.png" 
             alt="App BodyUp no celular" 
             width={425}
             height={850}
-            className="w-auto h-auto max-w-[425px]"
+            className="w-full max-w-[280px] h-auto"
           />
         </div>
 
         {/* Texto descritivo */}
-        <div className="text-center mb-8 px-6">
+        <div className="text-center mb-6">
           <p className="text-white text-base leading-relaxed">
             Acreditamos nos pequenos passos dado dia após dia, sem buscar a perfeição, mas sim o pequeno progresso. Com o BodyUp, você entende se de fato está progredindo com suas metas corporais, mesmo que atinja as metas mínimas.
           </p>
         </div>
 
         {/* Botão para abrir o formulário */}
-        <div className="flex justify-center mb-12 px-6">
+        <div className="flex justify-center mb-8">
           <button
             onClick={() => setIsPopupOpen(true)}
-            className="px-8 py-4 text-xl font-bold text-white rounded-full shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 active:scale-95"
+            className="px-6 py-3 text-lg font-bold text-white rounded-full shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 active:scale-95"
             style={{ backgroundColor: RED_ACCENT }}
           >
             Quero Participar!
@@ -198,30 +216,30 @@ const App = () => {
         </div>
 
         {/* Nova Seção - Conselho Federal */}
-        <div className="text-center mb-8 px-6">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-6">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white leading-tight mb-4">
             Segundo Conselho Federal de Nutricionistas:
           </h2>
           
-          <div className="space-y-3 mb-8">
-            <p className="text-white text-base leading-relaxed">
+          <div className="space-y-2 mb-6">
+            <p className="text-white text-sm sm:text-base leading-relaxed">
               <span className="font-bold">35%</span> das desistências em dietas são por mudanças severas na alimentação.
             </p>
-            <p className="text-white text-base leading-relaxed">
+            <p className="text-white text-sm sm:text-base leading-relaxed">
               outros <span className="font-bold">45%</span> das desistências em dietas são por "não conseguir seguir a risca"
             </p>
-            <p className="text-white text-base leading-relaxed">
+            <p className="text-white text-sm sm:text-base leading-relaxed">
               outros <span className="font-bold">20%</span> das desistências em dietas são por motivos financeiros.
             </p>
           </div>
 
-          <h3 className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-8">
+          <h3 className="text-2xl sm:text-3xl font-bold text-white leading-tight mb-6">
             Nós queremos acabar com isso! Por isso, seguimos uma filosofia:
           </h3>
         </div>
 
         {/* Seção com Celular e Lista lado a lado */}
-        <div className="flex flex-row items-center justify-center gap-8 mb-12 px-6">
+        <div className="flex flex-row items-center justify-center gap-4 mb-8 overflow-x-visible">
           {/* Imagem do Celular 02 */}
           <div className="flex-shrink-0">
             <Image 
@@ -229,16 +247,16 @@ const App = () => {
               alt="App BodyUp - Atinja suas metas" 
               width={250}
               height={500}
-              className="w-auto h-auto max-w-[250px]"
+              className="w-auto h-auto max-w-[180px] sm:max-w-[200px]"
             />
           </div>
 
           {/* Lista de Filosofia */}
-          <div className="text-left">
-            <h4 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+          <div className="text-left flex-1 min-w-0">
+            <h4 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2">
               Atinja suas metas mínimas!
             </h4>
-            <ul className="space-y-2 text-white text-base">
+            <ul className="space-y-1 text-white text-xs sm:text-sm">
               <li className="leading-relaxed">sem défit calórico gigantesco.</li>
               <li className="leading-relaxed">sem beber mil litros de água.</li>
               <li className="leading-relaxed">sem cortar carboidratos.</li>
@@ -249,72 +267,70 @@ const App = () => {
           </div>
         </div>
 
-        {/* Botão CTA Final */}
-        <div className="flex justify-center mb-12 px-6">
+        {/* Botão CTA */}
+        <div className="flex justify-center mb-8">
           <button
             onClick={() => setIsPopupOpen(true)}
-            className="px-8 py-4 text-xl font-bold text-white rounded-full shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 active:scale-95"
+            className="px-6 py-3 text-lg font-bold text-white rounded-full shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 active:scale-95"
             style={{ backgroundColor: RED_ACCENT }}
           >
             Quero Fazer Parte!
           </button>
         </div>
 
-        {/* Nova Seção - Carrossel de Telas do App */}
-        <div className="mb-12 px-6">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-8 text-center">
+        {/* Carrossel de Telas - Mobile Otimizado */}
+        <div className="mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white leading-tight mb-6 text-center">
             Conheça o BodyUp por dentro!
           </h2>
 
-          <div className="flex flex-col items-center gap-6">
-            <div className="flex flex-row items-center justify-center gap-8">
-              {/* Moldura com Screenshot */}
-              <div 
-                className="relative flex-shrink-0 cursor-grab active:cursor-grabbing"
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
-              >
-                {/* Screenshot (atrás) */}
-                <div className="absolute inset-0 flex items-center justify-center z-0">
-                  <Image 
-                    src={slides[currentSlide].image}
-                    alt="Tela do app" 
-                    width={750}
-                    height={1618}
-                    className="w-auto h-[450px] object-contain transition-opacity duration-300"
-                  />
-                </div>
-                {/* Moldura (na frente) */}
-                <div className="relative z-10">
-                  <Image 
-                    src="/moldura.png" 
-                    alt="Moldura do celular" 
-                    width={823}
-                    height={1677}
-                    className="w-auto h-[450px] object-contain pointer-events-none"
-                  />
-                </div>
+          <div className="flex flex-col items-center gap-4">
+            {/* Moldura com Screenshot */}
+            <div 
+              className="relative w-full max-w-[280px] cursor-grab active:cursor-grabbing"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
+              {/* Screenshot (atrás) */}
+              <div className="absolute inset-0 flex items-center justify-center z-0">
+                <Image 
+                  src={slides[currentSlide].image}
+                  alt="Tela do app" 
+                  width={750}
+                  height={1618}
+                  className="w-full h-auto object-contain transition-opacity duration-300"
+                />
               </div>
-
-              {/* Descrição */}
-              <div className="text-left w-[400px]">
-                <h3 className="text-3xl sm:text-4xl font-bold text-white mb-4 transition-opacity duration-300 h-[100px] flex items-start">
-                  {slides[currentSlide].title}
-                </h3>
-                <p className="text-white text-base leading-relaxed transition-opacity duration-300">
-                  {slides[currentSlide].description}
-                </p>
+              {/* Moldura (na frente) */}
+              <div className="relative z-10">
+                <Image 
+                  src="/moldura.png" 
+                  alt="Moldura do celular" 
+                  width={823}
+                  height={1677}
+                  className="w-full h-auto object-contain pointer-events-none"
+                />
               </div>
             </div>
 
-            {/* Indicadores de slide - agora abaixo da imagem */}
-            <div className="flex gap-3">
+            {/* Descrição */}
+            <div className="text-center w-full px-2">
+              <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 min-h-[60px] flex items-center justify-center">
+                {slides[currentSlide].title}
+              </h3>
+              <p className="text-white text-sm sm:text-base leading-relaxed">
+                {slides[currentSlide].description}
+              </p>
+            </div>
+
+            {/* Indicadores de slide */}
+            <div className="flex gap-2 mt-2">
               {slides.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentSlide(index)}
-                  className={`w-3 h-3 rounded-full transition duration-300 ${
+                  className={`w-2.5 h-2.5 rounded-full transition duration-300 ${
                     index === currentSlide ? 'bg-white scale-125' : 'bg-white/40'
                   }`}
                   aria-label={`Ir para slide ${index + 1}`}
@@ -324,11 +340,11 @@ const App = () => {
           </div>
         </div>
 
-        {/* Botão CTA após o carrossel */}
-        <div className="flex justify-center mb-12 px-6">
+        {/* Botão CTA Final */}
+        <div className="flex justify-center mb-8">
           <button
             onClick={() => setIsPopupOpen(true)}
-            className="px-8 py-4 text-xl font-bold text-white rounded-full shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 active:scale-95"
+            className="px-6 py-3 text-lg font-bold text-white rounded-full shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 active:scale-95"
             style={{ backgroundColor: RED_ACCENT }}
           >
             Quero Participar!
