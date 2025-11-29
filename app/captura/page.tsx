@@ -9,7 +9,7 @@ const DARK_BLUE = '#2B7AC9';
 const RED_ACCENT = '#EF5350';
 
 // Função para formatar o número de WhatsApp
-const formatWhatsapp = (value) => {
+const formatWhatsapp = (value: string) => {
   const digits = value.replace(/\D/g, '');
   
   let formatted = '';
