@@ -11,7 +11,7 @@ const RED_ACCENT = '#EF5350';
 // Função para formatar o número de WhatsApp
 const formatWhatsapp = (value: string) => {
   const digits = value.replace(/\D/g, '');
-  
+
   let formatted = '';
   if (digits.length > 0) {
     formatted += '(' + digits.substring(0, 2);
@@ -95,7 +95,7 @@ const App = () => {
   const validateForm = () => {
     const whatsappDigits = whatsapp.replace(/\D/g, '');
     const isNomeValid = nome.trim().length >= 2;
-    const isWhatsappValid = whatsappDigits.length === 11; 
+    const isWhatsappValid = whatsappDigits.length === 11;
     const isEmailValid = /^[^\s@]+@gmail\.com$/i.test(email);
     return isNomeValid && isWhatsappValid && isEmailValid;
   };
@@ -121,7 +121,7 @@ const App = () => {
 
     setTimeout(() => {
       setIsSubmitting(false);
-      setSubmitStatus('success'); 
+      setSubmitStatus('success');
       setNome('');
       setWhatsapp('');
       setEmail('');
@@ -137,7 +137,7 @@ const App = () => {
   useEffect(() => {
     document.body.style.overflowX = 'hidden';
     document.documentElement.style.overflowX = 'hidden';
-    
+
     return () => {
       document.body.style.overflowX = '';
       document.documentElement.style.overflowX = '';
@@ -145,9 +145,9 @@ const App = () => {
   }, []);
 
   return (
-    <div 
+    <div
       className="min-h-screen w-full overflow-x-hidden"
-      style={{ 
+      style={{
         backgroundColor: PRIMARY_BLUE
       }}
     >
@@ -192,12 +192,12 @@ const App = () => {
       </head>
 
       <div className="w-full max-w-screen-sm mx-auto px-4 py-6">
-        
+
         {/* Logo BodyUp */}
         <div className="flex justify-center mb-6">
-          <Image 
-            src="/bodyuplogo.png" 
-            alt="BodyUp Logo" 
+          <Image
+            src="/bodyuplogo.png"
+            alt="BodyUp Logo"
             width={280}
             height={80}
             className="w-full max-w-[200px] h-auto"
@@ -210,9 +210,9 @@ const App = () => {
           <h1 className="text-2xl sm:text-3xl font-bold text-white leading-tight mb-4">
             Seja um usuário teste do nosso app e ganhe uma assinatura vitalícia!
           </h1>
-          
+
           {/* Badge vermelho */}
-          <div 
+          <div
             className="inline-block px-4 py-2 rounded-full text-white font-medium text-sm"
             style={{ backgroundColor: RED_ACCENT }}
           >
@@ -222,9 +222,9 @@ const App = () => {
 
         {/* Imagem do Celular */}
         <div className="flex justify-center mb-6">
-          <Image 
-            src="/Cell_phone_01.png" 
-            alt="App BodyUp no celular" 
+          <Image
+            src="/Cell_phone_01.png"
+            alt="App BodyUp no celular"
             width={425}
             height={850}
             className="w-full max-w-[336px] h-auto"
@@ -254,7 +254,7 @@ const App = () => {
           <h2 className="text-2xl sm:text-3xl font-bold text-white leading-tight mb-4">
             Segundo Conselho Federal de Nutricionistas:
           </h2>
-          
+
           <div className="space-y-2 mb-6">
             <p className="text-white text-sm sm:text-base leading-relaxed">
               <span className="font-bold">35%</span> das desistências em dietas são por mudanças severas na alimentação.
@@ -276,17 +276,17 @@ const App = () => {
         <div className="flex flex-row items-center justify-center gap-8 mb-12 px-6">
           {/* Imagem do Celular 02 */}
           <div className="flex-shrink-0">
-            <Image 
-              src="/Cell_phone_02.png" 
-              alt="App BodyUp - Atinja suas metas" 
-              width={250}
-              height={500}
-              className="w-auto h-auto max-w-[300px]"
+            <Image
+              src="/Cell_phone_02.png"
+              alt="App BodyUp - Atinja suas metas"
+              width={350}
+              height={700}
+              className="w-auto h-auto max-w-[380px]"
             />
           </div>
 
           {/* Lista de Filosofia */}
-          <div className="text-left">
+          <div className="text-left flex-1">
             <h4 className="text-3xl sm:text-4xl font-bold text-white mb-4">
               Atinja suas metas mínimas!
             </h4>
@@ -314,14 +314,14 @@ const App = () => {
 
         {/* Nova Seção - Carrossel de Telas do App */}
         <div className="mb-12 px-6">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-8 text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white leading-tight mb-8 text-center">
             Conheça o BodyUp por dentro!
           </h2>
 
           <div className="flex flex-col items-center gap-6">
             <div className="flex flex-row items-center justify-center gap-8 w-full max-w-5xl">
               {/* Moldura com Screenshot */}
-              <div 
+              <div
                 className="relative flex-shrink-0 cursor-grab active:cursor-grabbing"
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
@@ -329,9 +329,9 @@ const App = () => {
               >
                 {/* Screenshot (atrás) */}
                 <div className="absolute inset-0 flex items-center justify-center z-0">
-                  <Image 
+                  <Image
                     src={slides[currentSlide].image}
-                    alt="Tela do app" 
+                    alt="Tela do app"
                     width={750}
                     height={1618}
                     className="w-auto h-[450px] object-contain transition-opacity duration-300"
@@ -339,9 +339,9 @@ const App = () => {
                 </div>
                 {/* Moldura (na frente) */}
                 <div className="relative z-10">
-                  <Image 
-                    src="/moldura.png" 
-                    alt="Moldura do celular" 
+                  <Image
+                    src="/moldura.png"
+                    alt="Moldura do celular"
                     width={823}
                     height={1677}
                     className="w-auto h-[450px] object-contain pointer-events-none"
@@ -366,9 +366,8 @@ const App = () => {
                 <button
                   key={index}
                   onClick={() => setCurrentSlide(index)}
-                  className={`w-3 h-3 rounded-full transition duration-300 ${
-                    index === currentSlide ? 'bg-white scale-125' : 'bg-white/40'
-                  }`}
+                  className={`w-3 h-3 rounded-full transition duration-300 ${index === currentSlide ? 'bg-white scale-125' : 'bg-white/40'
+                    }`}
                   aria-label={`Ir para slide ${index + 1}`}
                 />
               ))}
@@ -390,148 +389,148 @@ const App = () => {
       </div>
 
       {/* Popup Modal do Formulário */}
-      {isPopupOpen && (
-        <div 
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-          onClick={() => submitStatus !== 'success' && setIsPopupOpen(false)}
-        >
-          <div 
-            className={`rounded-2xl p-6 shadow-2xl max-w-md w-full relative transition-all duration-500 ${
-              submitStatus === 'success' ? 'bg-green-500' : 'bg-white'
-            }`}
-            onClick={(e) => e.stopPropagation()}
+      {
+        isPopupOpen && (
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+            onClick={() => submitStatus !== 'success' && setIsPopupOpen(false)}
           >
-            {submitStatus === 'success' ? (
-              // Tela de Sucesso - Todo o popup verde
-              <div className="text-center py-8">
-                <h2 className="text-3xl font-bold text-white mb-4">
-                  Cadastro enviado com sucesso!
-                </h2>
-                <p className="text-xl text-white leading-relaxed mb-8">
-                  Em alguns momentos, nossa equipe entrará em contato para mais informações. Obrigado!
-                </p>
-                
-                {/* Botões de Ação - Lado a lado */}
-                <div className="flex flex-row gap-3 justify-center">
-                  <a
-                    href="https://www.instagram.com/bodyup.app/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-6 py-3 bg-white text-green-600 font-bold rounded-lg shadow-lg hover:bg-gray-100 transition duration-300"
-                  >
-                    Seguir Instagram
-                  </a>
-                  <a
-                    href="https://bodyupsite.vercel.app/sobre"
-                    className="px-6 py-3 bg-white text-green-600 font-bold rounded-lg shadow-lg hover:bg-gray-100 transition duration-300"
-                  >
-                    Conhecer Mais
-                  </a>
+            <div
+              className={`rounded-2xl p-6 shadow-2xl max-w-md w-full relative transition-all duration-500 ${submitStatus === 'success' ? 'bg-green-500' : 'bg-white'
+                }`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {submitStatus === 'success' ? (
+                // Tela de Sucesso - Todo o popup verde
+                <div className="text-center py-8">
+                  <h2 className="text-3xl font-bold text-white mb-4">
+                    Cadastro enviado com sucesso!
+                  </h2>
+                  <p className="text-xl text-white leading-relaxed mb-8">
+                    Em alguns momentos, nossa equipe entrará em contato para mais informações. Obrigado!
+                  </p>
+
+                  {/* Botões de Ação - Lado a lado */}
+                  <div className="flex flex-row gap-3 justify-center">
+                    <a
+                      href="https://www.instagram.com/bodyup.app/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-6 py-3 bg-white text-green-600 font-bold rounded-lg shadow-lg hover:bg-gray-100 transition duration-300"
+                    >
+                      Seguir Instagram
+                    </a>
+                    <a
+                      href="https://bodyupsite.vercel.app/sobre"
+                      className="px-6 py-3 bg-white text-green-600 font-bold rounded-lg shadow-lg hover:bg-gray-100 transition duration-300"
+                    >
+                      Conhecer Mais
+                    </a>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              // Formulário normal
-              <>
-                {/* Botão Fechar */}
-                <button
-                  onClick={() => setIsPopupOpen(false)}
-                  className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-3xl font-bold leading-none"
-                >
-                  ×
-                </button>
-
-                <h2 className="text-xl font-bold text-gray-800 mb-4 text-center pr-8">
-                  Cadastre-se para o Teste
-                </h2>
-
-                <div className="space-y-4">
-                  {/* Campo Nome */}
-                  <div>
-                    <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-2">
-                      Como podemos te chamar?
-                    </label>
-                    <input
-                      type="text"
-                      id="nome"
-                      value={nome}
-                      onChange={(e) => setNome(e.target.value)}
-                      placeholder="Seu nome"
-                      className="w-full p-3 border-2 border-gray-300 rounded-lg outline-none transition duration-150 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-gray-900 placeholder-gray-400"
-                      style={{ borderColor: submitStatus === 'error' && nome.trim().length < 2 ? '#EF4444' : '' }}
-                      disabled={isSubmitting}
-                    />
-                    {submitStatus === 'error' && nome.trim().length < 2 && (
-                      <p className="mt-1 text-xs text-red-500">Digite seu nome</p>
-                    )}
-                  </div>
-
-                  {/* Campo WhatsApp */}
-                  <div>
-                    <label htmlFor="whatsapp" className="block text-sm font-medium text-gray-700 mb-2">
-                      WhatsApp (com DDD)
-                    </label>
-                    <input
-                      type="tel"
-                      id="whatsapp"
-                      value={whatsapp}
-                      onChange={handleWhatsappChange}
-                      placeholder="(99) 99999-9999"
-                      className="w-full p-3 border-2 border-gray-300 rounded-lg outline-none transition duration-150 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-gray-900 placeholder-gray-400"
-                      style={{ borderColor: submitStatus === 'error' && whatsapp.replace(/\D/g, '').length !== 11 ? '#EF4444' : '' }}
-                      disabled={isSubmitting}
-                    />
-                    {submitStatus === 'error' && whatsapp.replace(/\D/g, '').length !== 11 && (
-                      <p className="mt-1 text-xs text-red-500">Digite um número válido com 11 dígitos</p>
-                    )}
-                  </div>
-
-                  {/* Campo Email */}
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                      E-mail (Google Play)
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="seu.email@gmail.com"
-                      className="w-full p-3 border-2 border-gray-300 rounded-lg outline-none transition duration-150 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-gray-900 placeholder-gray-400"
-                      disabled={isSubmitting}
-                    />
-                    {validateEmail() && (
-                      <p className="mt-1 text-xs text-red-500">{validateEmail()}</p>
-                    )}
-                  </div>
-
-                  {/* Botão de Envio */}
+              ) : (
+                // Formulário normal
+                <>
+                  {/* Botão Fechar */}
                   <button
-                    onClick={handleSubmit}
-                    className={`w-full py-3 text-base font-bold rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-[1.02] active:scale-[0.98] ${
-                      isSubmitting || !validateForm() 
-                        ? 'opacity-50 cursor-not-allowed bg-gray-400 text-gray-700' 
-                        : 'text-white hover:opacity-90'
-                    }`}
-                    style={{ 
-                      backgroundColor: isSubmitting || !validateForm() ? '#9CA3AF' : PRIMARY_BLUE 
-                    }}
-                    disabled={isSubmitting || !validateForm()}
+                    onClick={() => setIsPopupOpen(false)}
+                    className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-3xl font-bold leading-none"
                   >
-                    {isSubmitting ? 'Enviando...' : 'Enviar Inscrição'}
+                    ×
                   </button>
-                </div>
 
-                {/* Rodapé */}
-                <p className="text-center text-xs text-gray-500 mt-6">
-                  Seus dados serão usados apenas para contato do programa de testes.
-                </p>
-              </>
-            )}
+                  <h2 className="text-xl font-bold text-gray-800 mb-4 text-center pr-8">
+                    Cadastre-se para o Teste
+                  </h2>
+
+                  <div className="space-y-4">
+                    {/* Campo Nome */}
+                    <div>
+                      <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-2">
+                        Como podemos te chamar?
+                      </label>
+                      <input
+                        type="text"
+                        id="nome"
+                        value={nome}
+                        onChange={(e) => setNome(e.target.value)}
+                        placeholder="Seu nome"
+                        className="w-full p-3 border-2 border-gray-300 rounded-lg outline-none transition duration-150 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-gray-900 placeholder-gray-400"
+                        style={{ borderColor: submitStatus === 'error' && nome.trim().length < 2 ? '#EF4444' : '' }}
+                        disabled={isSubmitting}
+                      />
+                      {submitStatus === 'error' && nome.trim().length < 2 && (
+                        <p className="mt-1 text-xs text-red-500">Digite seu nome</p>
+                      )}
+                    </div>
+
+                    {/* Campo WhatsApp */}
+                    <div>
+                      <label htmlFor="whatsapp" className="block text-sm font-medium text-gray-700 mb-2">
+                        WhatsApp (com DDD)
+                      </label>
+                      <input
+                        type="tel"
+                        id="whatsapp"
+                        value={whatsapp}
+                        onChange={handleWhatsappChange}
+                        placeholder="(99) 99999-9999"
+                        className="w-full p-3 border-2 border-gray-300 rounded-lg outline-none transition duration-150 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-gray-900 placeholder-gray-400"
+                        style={{ borderColor: submitStatus === 'error' && whatsapp.replace(/\D/g, '').length !== 11 ? '#EF4444' : '' }}
+                        disabled={isSubmitting}
+                      />
+                      {submitStatus === 'error' && whatsapp.replace(/\D/g, '').length !== 11 && (
+                        <p className="mt-1 text-xs text-red-500">Digite um número válido com 11 dígitos</p>
+                      )}
+                    </div>
+
+                    {/* Campo Email */}
+                    <div>
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                        E-mail (Google Play)
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="seu.email@gmail.com"
+                        className="w-full p-3 border-2 border-gray-300 rounded-lg outline-none transition duration-150 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-gray-900 placeholder-gray-400"
+                        disabled={isSubmitting}
+                      />
+                      {validateEmail() && (
+                        <p className="mt-1 text-xs text-red-500">{validateEmail()}</p>
+                      )}
+                    </div>
+
+                    {/* Botão de Envio */}
+                    <button
+                      onClick={handleSubmit}
+                      className={`w-full py-3 text-base font-bold rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-[1.02] active:scale-[0.98] ${isSubmitting || !validateForm()
+                        ? 'opacity-50 cursor-not-allowed bg-gray-400 text-gray-700'
+                        : 'text-white hover:opacity-90'
+                        }`}
+                      style={{
+                        backgroundColor: isSubmitting || !validateForm() ? '#9CA3AF' : PRIMARY_BLUE
+                      }}
+                      disabled={isSubmitting || !validateForm()}
+                    >
+                      {isSubmitting ? 'Enviando...' : 'Enviar Inscrição'}
+                    </button>
+                  </div>
+
+                  {/* Rodapé */}
+                  <p className="text-center text-xs text-gray-500 mt-6">
+                    Seus dados serão usados apenas para contato do programa de testes.
+                  </p>
+                </>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
-    </div>
+    </div >
   );
 };
 
