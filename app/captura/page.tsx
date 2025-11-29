@@ -26,6 +26,7 @@ const formatWhatsapp = (value: string) => {
 };
 
 const App = () => {
+  const [nome, setNome] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -93,9 +94,10 @@ const App = () => {
 
   const validateForm = () => {
     const whatsappDigits = whatsapp.replace(/\D/g, '');
+    const isNomeValid = nome.trim().length >= 3;
     const isWhatsappValid = whatsappDigits.length === 11; 
     const isEmailValid = /^[^\s@]+@gmail\.com$/i.test(email);
-    return isWhatsappValid && isEmailValid;
+    return isNomeValid && isWhatsappValid && isEmailValid;
   };
 
   const validateEmail = () => {
@@ -120,6 +122,7 @@ const App = () => {
     setTimeout(() => {
       setIsSubmitting(false);
       setSubmitStatus('success'); 
+      setNome('');
       setWhatsapp('');
       setEmail('');
     }, 1500);
@@ -130,43 +133,36 @@ const App = () => {
       const timer = setTimeout(() => {
         setSubmitStatus(null);
         setIsPopupOpen(false);
-      }, 3000); 
+      }, 5000); 
       return () => clearTimeout(timer);
     }
   }, [submitStatus]);
 
-  // Previne scroll horizontal e overscroll
+  // Previne scroll horizontal e overscroll (mas permite pull-to-refresh)
   useEffect(() => {
     document.body.style.overflowX = 'hidden';
-    document.body.style.overscrollBehavior = 'none';
     document.documentElement.style.overflowX = 'hidden';
-    document.documentElement.style.overscrollBehavior = 'none';
     
     return () => {
       document.body.style.overflowX = '';
-      document.body.style.overscrollBehavior = '';
       document.documentElement.style.overflowX = '';
-      document.documentElement.style.overscrollBehavior = '';
     };
   }, []);
 
   return (
     <div 
-      className="min-h-screen w-full overflow-x-hidden touch-pan-y"
+      className="min-h-screen w-full overflow-x-hidden"
       style={{ 
-        backgroundColor: PRIMARY_BLUE,
-        overscrollBehavior: 'none',
-        touchAction: 'pan-y'
+        backgroundColor: PRIMARY_BLUE
       }}
     >
       <style jsx global>{`
         html {
-          touch-action: pan-y;
           -webkit-text-size-adjust: 100%;
         }
         body {
-          touch-action: pan-y;
-          overscroll-behavior: none;
+          overscroll-behavior-x: none;
+          background-color: #4A9FF5;
         }
         * {
           -webkit-tap-highlight-color: transparent;
@@ -174,7 +170,7 @@ const App = () => {
       `}</style>
 
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
       </head>
 
       <div className="w-full max-w-screen-sm mx-auto px-4 py-6">
@@ -390,15 +386,30 @@ const App = () => {
             {submitStatus === 'success' ? (
               // Tela de Sucesso - Todo o popup verde
               <div className="text-center py-8">
-                <div className="mb-6">
-                  <span className="text-7xl">✅</span>
-                </div>
                 <h2 className="text-3xl font-bold text-white mb-4">
                   Cadastro enviado com sucesso!
                 </h2>
-                <p className="text-xl text-white leading-relaxed">
-                  Em alguns momentos, nossa equipe entrará em contato para mais informações. Obrigado! &lt;3
+                <p className="text-xl text-white leading-relaxed mb-8">
+                  Em alguns momentos, nossa equipe entrará em contato para mais informações. Obrigado!
                 </p>
+                
+                {/* Botões de Ação */}
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <a
+                    href="https://www.instagram.com/bodyup.app/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-6 py-3 bg-white text-green-600 font-bold rounded-lg shadow-lg hover:bg-gray-100 transition duration-300"
+                  >
+                    Seguir Instagram
+                  </a>
+                  <a
+                    href="https://bodyupsite.vercel.app/sobre"
+                    className="px-6 py-3 bg-white text-green-600 font-bold rounded-lg shadow-lg hover:bg-gray-100 transition duration-300"
+                  >
+                    Conhecer Mais
+                  </a>
+                </div>
               </div>
             ) : (
               // Formulário normal
@@ -416,6 +427,26 @@ const App = () => {
                 </h2>
 
                 <div className="space-y-4">
+                  {/* Campo Nome */}
+                  <div>
+                    <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-2">
+                      Nome Completo
+                    </label>
+                    <input
+                      type="text"
+                      id="nome"
+                      value={nome}
+                      onChange={(e) => setNome(e.target.value)}
+                      placeholder="Seu nome completo"
+                      className="w-full p-3 border-2 border-gray-300 rounded-lg outline-none transition duration-150 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-gray-900 placeholder-gray-400"
+                      style={{ borderColor: submitStatus === 'error' && nome.trim().length < 3 ? '#EF4444' : '' }}
+                      disabled={isSubmitting}
+                    />
+                    {submitStatus === 'error' && nome.trim().length < 3 && (
+                      <p className="mt-1 text-xs text-red-500">Digite seu nome completo</p>
+                    )}
+                  </div>
+
                   {/* Campo WhatsApp */}
                   <div>
                     <label htmlFor="whatsapp" className="block text-sm font-medium text-gray-700 mb-2">
