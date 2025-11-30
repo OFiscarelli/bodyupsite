@@ -3,15 +3,19 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 
-// URL da sua API Google Apps Script
+declare global {
+  interface Window {
+    fbq: any;
+    gtag: any;
+  }
+}
+
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxhpKsP9bMYZvWw32SdDNKTEHtH7pQB6w1dk_uNIAv7QJzvTJV-uR_FkwQpDm9FAUR0/exec';
 
-// Definição das cores baseadas na imagem
 const PRIMARY_BLUE = '#4A9FF5';
 const DARK_BLUE = '#2B7AC9';
 const RED_ACCENT = '#EF5350';
 
-// Função para formatar o número de WhatsApp
 const formatWhatsapp = (value: string) => {
   const digits = value.replace(/\D/g, '');
 
@@ -28,6 +32,25 @@ const formatWhatsapp = (value: string) => {
   return formatted;
 };
 
+const getUTMParams = () => {
+  if (typeof window === 'undefined') return {};
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  
+  const utmParams = {
+    utm_source: urlParams.get('utm_source') || '',
+    utm_medium: urlParams.get('utm_medium') || '',
+    utm_campaign: urlParams.get('utm_campaign') || '',
+    utm_term: urlParams.get('utm_term') || '',
+    utm_content: urlParams.get('utm_content') || ''
+  };
+
+  // Log para debug - você pode remover depois
+  console.log('UTM Params capturados:', utmParams);
+  
+  return utmParams;
+};
+
 const App = () => {
   const [nome, setNome] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
@@ -36,8 +59,30 @@ const App = () => {
   const [submitStatus, setSubmitStatus] = useState<string | null>(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [utmParams, setUtmParams] = useState({});
 
-  // Dados do carrossel
+  useEffect(() => {
+    const params = getUTMParams();
+    setUtmParams(params);
+    
+    // Armazena os UTMs no sessionStorage para persistir durante a sessão
+    if (typeof window !== 'undefined') {
+      // Só armazena se houver pelo menos um parâmetro UTM
+      if (Object.values(params).some(val => val !== '')) {
+        sessionStorage.setItem('utm_params', JSON.stringify(params));
+        console.log('UTM Params armazenados no sessionStorage');
+      } else {
+        // Tenta recuperar UTMs armazenados anteriormente
+        const storedParams = sessionStorage.getItem('utm_params');
+        if (storedParams) {
+          const parsed = JSON.parse(storedParams);
+          setUtmParams(parsed);
+          console.log('UTM Params recuperados do sessionStorage:', parsed);
+        }
+      }
+    }
+  }, []);
+
   const slides = [
     {
       image: '/imagem_01_para_moldura.png',
@@ -64,7 +109,6 @@ const App = () => {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
-  // Touch handlers para swipe
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
 
@@ -78,11 +122,9 @@ const App = () => {
 
   const handleTouchEnd = () => {
     if (touchStart - touchEnd > 75) {
-      // Swipe left - próximo slide
       nextSlide();
     }
     if (touchStart - touchEnd < -75) {
-      // Swipe right - slide anterior
       prevSlide();
     }
   };
@@ -112,7 +154,6 @@ const App = () => {
     return null;
   };
 
-  // Lógica de envio atualizada para conectar com o Google Sheets
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -124,12 +165,23 @@ const App = () => {
     setIsSubmitting(true);
     setSubmitStatus(null);
 
-    // Preparando os dados
+    // Recupera UTMs do sessionStorage caso não estejam no estado
+    let finalUtmParams = utmParams;
+    if (typeof window !== 'undefined' && Object.values(utmParams).every(val => val === '')) {
+      const storedParams = sessionStorage.getItem('utm_params');
+      if (storedParams) {
+        finalUtmParams = JSON.parse(storedParams);
+      }
+    }
+
     const formData = {
       nome: nome,
       whatsapp: whatsapp,
-      email: email
+      email: email,
+      ...finalUtmParams
     };
+
+    console.log('Dados enviados para o Google Sheets:', formData);
 
     try {
       await fetch(GOOGLE_SCRIPT_URL, {
@@ -141,21 +193,27 @@ const App = () => {
         },
       });
 
-      // Sucesso
+      if (typeof window !== 'undefined' && window.fbq) {
+        window.fbq('track', 'Lead', {
+          content_name: 'Usuario Teste',
+          ...finalUtmParams
+        });
+        console.log('Meta Pixel: Lead rastreado com UTMs');
+      }
+
+      if (typeof window !== 'undefined' && window.gtag) {
+        window.gtag('event', 'generate_lead', {
+          event_category: 'engagement',
+          event_label: 'Cadastro Usuário Teste',
+          value: nome,
+          ...finalUtmParams
+        });
+        console.log('Google Analytics: Lead rastreado com UTMs');
+      }
+
       setIsSubmitting(false);
       setSubmitStatus('success');
       
-      // Dispara evento Lead no Meta Pixel
-      if (typeof window !== 'undefined' && (window as any).fbq) {
-        (window as any).fbq('track', 'Lead', {
-          content_name: 'Teste BodyUp - Assinatura Vitalícia',
-          content_category: 'Cadastro Usuário Teste',
-          value: 0,
-          currency: 'BRL'
-        });
-      }
-      
-      // Limpa o formulário
       setNome('');
       setWhatsapp('');
       setEmail('');
@@ -168,12 +226,6 @@ const App = () => {
     }
   };
 
-  useEffect(() => {
-    // Popup de sucesso não fecha automaticamente
-    // O usuário pode interagir com os botões
-  }, [submitStatus]);
-
-  // Previne scroll horizontal e overscroll (mas permite pull-to-refresh)
   useEffect(() => {
     document.body.style.overflowX = 'hidden';
     document.documentElement.style.overflowX = 'hidden';
@@ -203,7 +255,6 @@ const App = () => {
           -webkit-tap-highlight-color: transparent;
         }
         
-        /* Customização da scrollbar */
         ::-webkit-scrollbar {
           width: 10px;
         }
@@ -220,20 +271,14 @@ const App = () => {
           background: rgba(255, 255, 255, 0.5);
         }
         
-        /* Firefox */
         * {
           scrollbar-width: thin;
           scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
         }
       `}</style>
 
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
-      </head>
-
       <div className="w-full max-w-screen-sm mx-auto px-4 py-6">
 
-        {/* Logo BodyUp */}
         <div className="flex justify-center mb-6">
           <Image
             src="/bodyuplogo.png"
@@ -245,13 +290,11 @@ const App = () => {
           />
         </div>
 
-        {/* Header com título e badge */}
         <div className="text-center mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-white leading-tight mb-4">
             Seja um usuário teste do nosso app e ganhe uma assinatura vitalícia!
           </h1>
 
-          {/* Badge vermelho */}
           <div
             className="inline-block px-4 py-2 rounded-full text-white font-medium text-sm"
             style={{ backgroundColor: RED_ACCENT }}
@@ -260,7 +303,6 @@ const App = () => {
           </div>
         </div>
 
-        {/* Imagem do Celular */}
         <div className="flex justify-center mb-6">
           <Image
             src="/Cell_phone_01.png"
@@ -271,14 +313,12 @@ const App = () => {
           />
         </div>
 
-        {/* Texto descritivo */}
         <div className="text-center mb-6">
           <p className="text-white text-base leading-relaxed">
             Acreditamos nos pequenos passos dado dia após dia, sem buscar a perfeição, mas sim o pequeno progresso. Com o BodyUp, você entende se de fato está progredindo com suas metas corporais, mesmo que atinja as metas mínimas.
           </p>
         </div>
 
-        {/* Botão para abrir o formulário */}
         <div className="flex justify-center mb-8">
           <button
             onClick={() => setIsPopupOpen(true)}
@@ -289,7 +329,6 @@ const App = () => {
           </button>
         </div>
 
-        {/* Nova Seção - Conselho Federal */}
         <div className="text-center mb-6">
           <h2 className="text-2xl sm:text-3xl font-bold text-white leading-tight mb-4">
             Segundo Conselho Federal de Nutricionistas:
@@ -312,9 +351,7 @@ const App = () => {
           </h3>
         </div>
 
-        {/* Seção com Celular e Lista lado a lado - ORIGINAL */}
         <div className="flex flex-row items-center justify-center gap-8 mb-12 px-6">
-          {/* Imagem do Celular 02 */}
           <div className="flex-shrink-0">
             <Image
               src="/Cell_phone_02.png"
@@ -325,7 +362,6 @@ const App = () => {
             />
           </div>
 
-          {/* Lista de Filosofia */}
           <div className="text-left flex-1">
             <h4 className="text-3xl sm:text-4xl font-bold text-white mb-4">
               Atinja suas metas mínimas!
@@ -341,7 +377,6 @@ const App = () => {
           </div>
         </div>
 
-        {/* Botão CTA */}
         <div className="flex justify-center mb-8">
           <button
             onClick={() => setIsPopupOpen(true)}
@@ -352,7 +387,6 @@ const App = () => {
           </button>
         </div>
 
-        {/* Nova Seção - Carrossel de Telas do App */}
         <div className="mb-12 px-6">
           <h2 className="text-2xl sm:text-3xl font-bold text-white leading-tight mb-8 text-center">
             Conheça o BodyUp por dentro!
@@ -360,14 +394,12 @@ const App = () => {
 
           <div className="flex flex-col items-center gap-6">
             <div className="flex flex-row items-center justify-center gap-8 w-full max-w-5xl">
-              {/* Moldura com Screenshot */}
               <div
                 className="relative flex-shrink-0 cursor-grab active:cursor-grabbing"
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
               >
-                {/* Screenshot (atrás) */}
                 <div className="absolute inset-0 flex items-center justify-center z-0">
                   <Image
                     src={slides[currentSlide].image}
@@ -377,7 +409,6 @@ const App = () => {
                     className="w-auto h-[450px] object-contain transition-opacity duration-300"
                   />
                 </div>
-                {/* Moldura (na frente) */}
                 <div className="relative z-10">
                   <Image
                     src="/moldura.png"
@@ -389,7 +420,6 @@ const App = () => {
                 </div>
               </div>
 
-              {/* Descrição */}
               <div className="text-left flex-1 max-w-md">
                 <h3 className="text-3xl sm:text-4xl font-bold text-white mb-4 transition-opacity duration-300 min-h-[100px] flex items-start">
                   {slides[currentSlide].title}
@@ -400,7 +430,6 @@ const App = () => {
               </div>
             </div>
 
-            {/* Indicadores de slide - agora abaixo da imagem */}
             <div className="flex gap-3">
               {slides.map((_, index) => (
                 <button
@@ -415,7 +444,6 @@ const App = () => {
           </div>
         </div>
 
-        {/* Botão CTA Final */}
         <div className="flex justify-center mb-8">
           <button
             onClick={() => setIsPopupOpen(true)}
@@ -428,149 +456,137 @@ const App = () => {
 
       </div>
 
-      {/* Popup Modal do Formulário */}
-      {
-        isPopupOpen && (
+      {isPopupOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+          onClick={() => submitStatus !== 'success' && setIsPopupOpen(false)}
+        >
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-            onClick={() => submitStatus !== 'success' && setIsPopupOpen(false)}
+            className={`rounded-2xl p-6 shadow-2xl max-w-md w-full relative transition-all duration-500 ${submitStatus === 'success' ? 'bg-green-500' : 'bg-white'
+              }`}
+            onClick={(e) => e.stopPropagation()}
           >
-            <div
-              className={`rounded-2xl p-6 shadow-2xl max-w-md w-full relative transition-all duration-500 ${submitStatus === 'success' ? 'bg-green-500' : 'bg-white'
-                }`}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {submitStatus === 'success' ? (
-                // Tela de Sucesso - Todo o popup verde
-                <div className="text-center py-8">
-                  <h2 className="text-3xl font-bold text-white mb-4">
-                    Cadastro enviado com sucesso!
-                  </h2>
-                  <p className="text-xl text-white leading-relaxed mb-8">
-                    Em alguns momentos, nossa equipe entrará em contato para mais informações. Obrigado!
-                  </p>
+            {submitStatus === 'success' ? (
+              <div className="text-center py-8">
+                <h2 className="text-3xl font-bold text-white mb-4">
+                  Cadastro enviado com sucesso!
+                </h2>
+                <p className="text-xl text-white leading-relaxed mb-8">
+                  Em alguns momentos, nossa equipe entrará em contato para mais informações. Obrigado!
+                </p>
 
-                  {/* Botões de Ação - Lado a lado */}
-                  <div className="flex flex-row gap-3 justify-center">
-                    <a
-                      href="https://www.instagram.com/bodyup.app/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-6 py-3 bg-white text-green-600 font-bold rounded-lg shadow-lg hover:bg-gray-100 transition duration-300"
-                    >
-                      Seguir Instagram
-                    </a>
-                    <a
-                      href="https://bodyupsite.vercel.app/sobre"
-                      className="px-6 py-3 bg-white text-green-600 font-bold rounded-lg shadow-lg hover:bg-gray-100 transition duration-300"
-                    >
-                      Conhecer Mais
-                    </a>
-                  </div>
-                </div>
-              ) : (
-                // Formulário normal
-                <>
-                  {/* Botão Fechar */}
-                  <button
-                    onClick={() => setIsPopupOpen(false)}
-                    className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-3xl font-bold leading-none"
+                <div className="flex flex-row gap-3 justify-center">
+                  <a
+                    href="https://www.instagram.com/bodyup.app/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-6 py-3 bg-white text-green-600 font-bold rounded-lg shadow-lg hover:bg-gray-100 transition duration-300"
                   >
-                    ×
-                  </button>
+                    Seguir Instagram
+                  </a>
+                  <a
+                    href="https://bodyupsite.vercel.app/sobre"
+                    className="px-6 py-3 bg-white text-green-600 font-bold rounded-lg shadow-lg hover:bg-gray-100 transition duration-300"
+                  >
+                    Conhecer Mais
+                  </a>
+                </div>
+              </div>
+            ) : (
+              <>
+                <button
+                  onClick={() => setIsPopupOpen(false)}
+                  className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-3xl font-bold leading-none"
+                >
+                  ×
+                </button>
 
-                  <h2 className="text-xl font-bold text-gray-800 mb-4 text-center pr-8">
-                    Cadastre-se para o Teste
-                  </h2>
+                <h2 className="text-xl font-bold text-gray-800 mb-4 text-center pr-8">
+                  Cadastre-se para o Teste
+                </h2>
 
-                  <div className="space-y-4">
-                    {/* Campo Nome */}
-                    <div>
-                      <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-2">
-                        Como podemos te chamar?
-                      </label>
-                      <input
-                        type="text"
-                        id="nome"
-                        value={nome}
-                        onChange={(e) => setNome(e.target.value)}
-                        placeholder="Seu nome"
-                        className="w-full p-3 border-2 border-gray-300 rounded-lg outline-none transition duration-150 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-gray-900 placeholder-gray-400"
-                        style={{ borderColor: submitStatus === 'error' && nome.trim().length < 2 ? '#EF4444' : '' }}
-                        disabled={isSubmitting}
-                      />
-                      {submitStatus === 'error' && nome.trim().length < 2 && (
-                        <p className="mt-1 text-xs text-red-500">Digite seu nome</p>
-                      )}
-                    </div>
-
-                    {/* Campo WhatsApp */}
-                    <div>
-                      <label htmlFor="whatsapp" className="block text-sm font-medium text-gray-700 mb-2">
-                        WhatsApp (com DDD)
-                      </label>
-                      <input
-                        type="tel"
-                        id="whatsapp"
-                        value={whatsapp}
-                        onChange={handleWhatsappChange}
-                        placeholder="(99) 99999-9999"
-                        className="w-full p-3 border-2 border-gray-300 rounded-lg outline-none transition duration-150 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-gray-900 placeholder-gray-400"
-                        style={{ borderColor: submitStatus === 'error' && whatsapp.replace(/\D/g, '').length !== 11 ? '#EF4444' : '' }}
-                        disabled={isSubmitting}
-                      />
-                      {submitStatus === 'error' && whatsapp.replace(/\D/g, '').length !== 11 && (
-                        <p className="mt-1 text-xs text-red-500">Digite um número válido com 11 dígitos</p>
-                      )}
-                    </div>
-
-                    {/* Campo Email */}
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                        E-mail (Google Play)
-                      </label>
-                      <input
-                        type="email"
-                        id="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="seu.email@gmail.com"
-                        className="w-full p-3 border-2 border-gray-300 rounded-lg outline-none transition duration-150 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-gray-900 placeholder-gray-400"
-                        disabled={isSubmitting}
-                      />
-                      {validateEmail() && (
-                        <p className="mt-1 text-xs text-red-500">{validateEmail()}</p>
-                      )}
-                    </div>
-
-                    {/* Botão de Envio */}
-                    <button
-                      onClick={handleSubmit}
-                      className={`w-full py-3 text-base font-bold rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-[1.02] active:scale-[0.98] ${isSubmitting || !validateForm()
-                        ? 'opacity-50 cursor-not-allowed bg-gray-400 text-gray-700'
-                        : 'text-white hover:opacity-90'
-                        }`}
-                      style={{
-                        backgroundColor: isSubmitting || !validateForm() ? '#9CA3AF' : PRIMARY_BLUE
-                      }}
-                      disabled={isSubmitting || !validateForm()}
-                    >
-                      {isSubmitting ? 'Enviando...' : 'Enviar Inscrição'}
-                    </button>
+                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-2">
+                      Como podemos te chamar?
+                    </label>
+                    <input
+                      type="text"
+                      id="nome"
+                      value={nome}
+                      onChange={(e) => setNome(e.target.value)}
+                      placeholder="Seu nome"
+                      className="w-full p-3 border-2 border-gray-300 rounded-lg outline-none transition duration-150 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-gray-900 placeholder-gray-400"
+                      style={{ borderColor: submitStatus === 'error' && nome.trim().length < 2 ? '#EF4444' : '' }}
+                      disabled={isSubmitting}
+                    />
+                    {submitStatus === 'error' && nome.trim().length < 2 && (
+                      <p className="mt-1 text-xs text-red-500">Digite seu nome</p>
+                    )}
                   </div>
 
-                  {/* Rodapé */}
-                  <p className="text-center text-xs text-gray-500 mt-6">
-                    Seus dados serão usados apenas para contato do programa de testes.
-                  </p>
-                </>
-              )}
-            </div>
-          </div>
-        )
-      }
+                  <div>
+                    <label htmlFor="whatsapp" className="block text-sm font-medium text-gray-700 mb-2">
+                      WhatsApp (com DDD)
+                    </label>
+                    <input
+                      type="tel"
+                      id="whatsapp"
+                      value={whatsapp}
+                      onChange={handleWhatsappChange}
+                      placeholder="(99) 99999-9999"
+                      className="w-full p-3 border-2 border-gray-300 rounded-lg outline-none transition duration-150 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-gray-900 placeholder-gray-400"
+                      style={{ borderColor: submitStatus === 'error' && whatsapp.replace(/\D/g, '').length !== 11 ? '#EF4444' : '' }}
+                      disabled={isSubmitting}
+                    />
+                    {submitStatus === 'error' && whatsapp.replace(/\D/g, '').length !== 11 && (
+                      <p className="mt-1 text-xs text-red-500">Digite um número válido com 11 dígitos</p>
+                    )}
+                  </div>
 
-    </div >
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                      E-mail (Google Play)
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="seu.email@gmail.com"
+                      className="w-full p-3 border-2 border-gray-300 rounded-lg outline-none transition duration-150 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-gray-900 placeholder-gray-400"
+                      disabled={isSubmitting}
+                    />
+                    {validateEmail() && (
+                      <p className="mt-1 text-xs text-red-500">{validateEmail()}</p>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={handleSubmit}
+                    className={`w-full py-3 text-base font-bold rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-[1.02] active:scale-[0.98] ${isSubmitting || !validateForm()
+                      ? 'opacity-50 cursor-not-allowed bg-gray-400 text-gray-700'
+                      : 'text-white hover:opacity-90'
+                      }`}
+                    style={{
+                      backgroundColor: isSubmitting || !validateForm() ? '#9CA3AF' : PRIMARY_BLUE
+                    }}
+                    disabled={isSubmitting || !validateForm()}
+                  >
+                    {isSubmitting ? 'Enviando...' : 'Enviar Inscrição'}
+                  </button>
+                </div>
+
+                <p className="text-center text-xs text-gray-500 mt-6">
+                  Seus dados serão usados apenas para contato do programa de testes.
+                </p>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+    </div>
   );
 };
 
