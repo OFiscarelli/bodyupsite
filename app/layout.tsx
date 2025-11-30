@@ -14,7 +14,21 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body>
+      <head>
+        {/* Google Analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-Q887D1BYMM"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-Q887D1BYMM');
+          `}
+        </Script>
+
         {/* Meta Pixel Code */}
         <Script
           id="facebook-pixel"
@@ -42,9 +56,8 @@ export default function RootLayout({
             alt=""
           />
         </noscript>
-        
-        {children}
-      </body>
+      </head>
+      <body>{children}</body>
     </html>
   )
 }
