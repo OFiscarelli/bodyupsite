@@ -134,16 +134,26 @@ const App = () => {
     try {
       await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
-        mode: 'no-cors', // Importante para evitar erro de CORS com Google Script
+        mode: 'no-cors',
         body: JSON.stringify(formData),
         headers: {
-          'Content-Type': 'text/plain;charset=utf-8', // Enviar como texto evita preflight do browser
+          'Content-Type': 'text/plain;charset=utf-8',
         },
       });
 
       // Sucesso
       setIsSubmitting(false);
       setSubmitStatus('success');
+      
+      // Dispara evento Lead no Meta Pixel
+      if (typeof window !== 'undefined' && (window as any).fbq) {
+        (window as any).fbq('track', 'Lead', {
+          content_name: 'Teste BodyUp - Assinatura Vitalícia',
+          content_category: 'Cadastro Usuário Teste',
+          value: 0,
+          currency: 'BRL'
+        });
+      }
       
       // Limpa o formulário
       setNome('');
