@@ -45,7 +45,6 @@ const getUTMParams = () => {
     utm_content: urlParams.get('utm_content') || ''
   };
 
-  // Log para debug - você pode remover depois
   console.log('UTM Params capturados:', utmParams);
   
   return utmParams;
@@ -65,14 +64,11 @@ const App = () => {
     const params = getUTMParams();
     setUtmParams(params);
     
-    // Armazena os UTMs no sessionStorage para persistir durante a sessão
     if (typeof window !== 'undefined') {
-      // Só armazena se houver pelo menos um parâmetro UTM
       if (Object.values(params).some(val => val !== '')) {
         sessionStorage.setItem('utm_params', JSON.stringify(params));
         console.log('UTM Params armazenados no sessionStorage');
       } else {
-        // Tenta recuperar UTMs armazenados anteriormente
         const storedParams = sessionStorage.getItem('utm_params');
         if (storedParams) {
           const parsed = JSON.parse(storedParams);
@@ -165,7 +161,6 @@ const App = () => {
     setIsSubmitting(true);
     setSubmitStatus(null);
 
-    // Recupera UTMs do sessionStorage caso não estejam no estado
     let finalUtmParams = utmParams;
     if (typeof window !== 'undefined' && Object.values(utmParams).every(val => val === '')) {
       const storedParams = sessionStorage.getItem('utm_params');
@@ -462,35 +457,33 @@ const App = () => {
           onClick={() => submitStatus !== 'success' && setIsPopupOpen(false)}
         >
           <div
-            className={`rounded-2xl p-6 shadow-2xl max-w-md w-full relative transition-all duration-500 ${submitStatus === 'success' ? 'bg-green-500' : 'bg-white'
-              }`}
+            className={`rounded-2xl p-6 shadow-2xl max-w-md w-full relative transition-all duration-500`}
+            style={{
+              backgroundColor: submitStatus === 'success' ? PRIMARY_BLUE : 'white'
+            }}
             onClick={(e) => e.stopPropagation()}
           >
             {submitStatus === 'success' ? (
               <div className="text-center py-8">
                 <h2 className="text-3xl font-bold text-white mb-4">
-                  Cadastro enviado com sucesso!
+                  Sua inscrição foi feita!
                 </h2>
                 <p className="text-xl text-white leading-relaxed mb-8">
-                  Em alguns momentos, nossa equipe entrará em contato para mais informações. Obrigado!
+                  Você pode baixar o aplicativo no link abaixo:
                 </p>
 
-                <div className="flex flex-row gap-3 justify-center">
-                  <a
-                    href="https://www.instagram.com/bodyup.app/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-6 py-3 bg-white text-green-600 font-bold rounded-lg shadow-lg hover:bg-gray-100 transition duration-300"
-                  >
-                    Seguir Instagram
-                  </a>
-                  <a
-                    href="https://bodyupsite.vercel.app/sobre"
-                    className="px-6 py-3 bg-white text-green-600 font-bold rounded-lg shadow-lg hover:bg-gray-100 transition duration-300"
-                  >
-                    Conhecer Mais
-                  </a>
-                </div>
+                <a
+                  href="https://play.google.com/store/apps/details?id=br.com.bodyup.app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block px-8 py-4 bg-white text-blue-600 font-bold rounded-lg shadow-lg hover:bg-gray-100 transition duration-300 mb-6"
+                >
+                  Baixar Aplicativo
+                </a>
+
+                <p className="text-sm text-white/90 leading-relaxed px-4">
+                  Para fazer o download, você será redirecionado à Play Store. Nosso aplicativo é verificado pela Google para uma experiência segura.
+                </p>
               </div>
             ) : (
               <>
