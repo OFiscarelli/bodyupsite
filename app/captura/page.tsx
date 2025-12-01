@@ -9,7 +9,7 @@ declare global {
     gtag: any;
   }
 }
-
+// versão anterior
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxhpKsP9bMYZvWw32SdDNKTEHtH7pQB6w1dk_uNIAv7QJzvTJV-uR_FkwQpDm9FAUR0/exec';
 
 const PRIMARY_BLUE = '#4A9FF5';
